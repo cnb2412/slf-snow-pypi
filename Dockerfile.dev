@@ -1,0 +1,19 @@
+FROM python:3.13-slim
+
+# System-Tools fuer Builds und Git-Workflows
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      git \
+      build-essential \
+      curl \
+      ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# uv (Astral) als All-in-one Python-Toolchain
+RUN pip install --no-cache-dir uv
+
+# Non-Root-User fuer rootless Workflows und korrekte Bind-Mount-UIDs
+RUN useradd --create-home --uid 1000 --shell /bin/bash dev
+USER dev
+# RUN mkdir -p /home/dev/.cache/uv
+
+WORKDIR /workspace
