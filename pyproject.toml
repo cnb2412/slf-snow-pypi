@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "slf-snow"
+version = "0.1.0"
+description = "Async Python client for the SLF (WSL) snow measurement API"
+readme = "README.md"
+requires-python = ">=3.13"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Christian Niephaus", email = "c@cnb24.de" }]
+keywords = ["slf", "snow", "schnee", "avalanche", "switzerland", "home-assistant"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3.14",
+  "License :: OSI Approved :: MIT License",
+  "Typing :: Typed",
+]
+dependencies = [
+  "aiohttp>=3.9",
+]
+
+
+# PEP 735 Dependency-Groups (von uv unterstützt) - landen NICHT im Wheel
+[dependency-groups]
+dev = [
+  "pytest>=8",
+  "pytest-asyncio>=0.24",
+  "pytest-cov>=5",
+  "aioresponses>=0.7",     # mockt aiohttp-Requests in Tests
+  "ruff>=0.6",
+  "mypy>=1.11",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC", "RUF"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+files = ["src", "tests"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+addopts = "-ra --cov=slf_snow --cov-report=term-missing"
+testpaths = ["tests"]
