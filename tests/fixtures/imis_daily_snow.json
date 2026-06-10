@@ -1,0 +1,38 @@
+[
+  {
+    "station_code": "ADE2",
+    "measure_date": "2026-06-09T00:00:00",
+    "HS": 0.0,
+    "HN_1D": 0.0
+  },
+  {
+    "station_code": "DAV2",
+    "measure_date": "2026-06-09T00:00:00",
+    "HS": 0.0,
+    "HN_1D": 0.0
+  },
+  {
+    "station_code": "WFJ2",
+    "measure_date": "2026-06-09T00:00:00",
+    "HS": 6.0,
+    "HN_1D": 0.0
+  },
+  {
+    "station_code": "ADE2",
+    "measure_date": "2026-06-08T00:00:00",
+    "HS": 0.0,
+    "HN_1D": 0.0
+  },
+  {
+    "station_code": "DAV2",
+    "measure_date": "2026-06-08T00:00:00",
+    "HS": 0.0,
+    "HN_1D": 0.0
+  },
+  {
+    "station_code": "WFJ2",
+    "measure_date": "2026-06-08T00:00:00",
+    "HS": 14.0,
+    "HN_1D": 0.0
+  }
+]
