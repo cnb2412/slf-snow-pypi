@@ -34,6 +34,12 @@ dev = [
   "mypy>=1.11",
 ]
 
+[tool.uv]
+# aioresponses (<=0.7.8) is incompatible with aiohttp 3.14, whose ClientResponse
+# now requires a stream_writer argument. Cap only the dev/test environment until
+# aioresponses catches up; the published package keeps aiohttp>=3.9 unbounded.
+constraint-dependencies = ["aiohttp<3.14"]
+
 [tool.ruff]
 target-version = "py313"
 line-length = 88
