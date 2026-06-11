@@ -1,7 +1,7 @@
 {
   "name": "slf-snow-dev",
   "build": {
-    "dockerfile": "../Dockerfile.dev",
+    "dockerfile": "../Dockerfile.dev"
   },
   "remoteUser": "dev",
   "workspaceFolder": "/workspace",
@@ -10,8 +10,8 @@
     {
       "source": "slf-snow-venv",
       "target": "/workspace/.venv",
-      "type": "volume",
-    },
+      "type": "volume"
+    }
   ],
-  "postCreateCommand": "uv python install 3.13 && uv sync",
+  "postCreateCommand": "uv python install 3.13 && uv sync"
 }
