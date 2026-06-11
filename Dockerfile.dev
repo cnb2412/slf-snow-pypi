@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # uv (Astral) als All-in-one Python-Toolchain
-RUN pip install --no-cache-dir uv
+RUN pip install --no-cache-dir uv pre-commit
 
 # Non-Root-User fuer rootless Workflows und korrekte Bind-Mount-UIDs
 RUN useradd --create-home --uid 1000 --shell /bin/bash dev
