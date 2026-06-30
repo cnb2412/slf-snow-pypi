@@ -1,0 +1,12 @@
+[
+  {
+    "station_code": "KLO2",
+    "measure_date": "2026-06-09T20:50:00Z",
+    "RR_10MIN_SUM": 0.4
+  },
+  {
+    "station_code": "KLO2",
+    "measure_date": "2026-06-09T21:00:00Z",
+    "RR_10MIN_SUM": 1.2
+  }
+]

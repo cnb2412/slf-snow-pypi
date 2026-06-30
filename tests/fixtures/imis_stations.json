@@ -1,0 +1,32 @@
+[
+  {
+    "code": "WFJ2",
+    "label": "Weissfluhjoch",
+    "lon": 9.809,
+    "lat": 46.829,
+    "elevation": 2536.0,
+    "country_code": "CH",
+    "canton_code": "GR",
+    "type": "SNOW_FLAT"
+  },
+  {
+    "code": "GUM2",
+    "label": "Gummen",
+    "lon": 8.853,
+    "lat": 46.93,
+    "elevation": 1905.0,
+    "country_code": "CH",
+    "canton_code": "NW",
+    "type": "WIND"
+  },
+  {
+    "code": "KLO2",
+    "label": "Klosters",
+    "lon": 9.876,
+    "lat": 46.889,
+    "elevation": 2140.0,
+    "country_code": "CH",
+    "canton_code": "GR",
+    "type": "SNOW_FLAT"
+  }
+]

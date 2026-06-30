@@ -21,3 +21,27 @@ def imis_measurements() -> list[dict[str, Any]]:
 def imis_daily_snow() -> list[dict[str, Any]]:
     data: list[dict[str, Any]] = _load("imis_daily_snow.json")
     return data
+
+
+@pytest.fixture
+def imis_stations() -> list[dict[str, Any]]:
+    data: list[dict[str, Any]] = _load("imis_stations.json")
+    return data
+
+
+@pytest.fixture
+def imis_all_measurements() -> list[dict[str, Any]]:
+    data: list[dict[str, Any]] = _load("imis_all_measurements.json")
+    return data
+
+
+@pytest.fixture
+def imis_all_precipitation() -> list[dict[str, Any]]:
+    data: list[dict[str, Any]] = _load("imis_all_precipitation.json")
+    return data
+
+
+@pytest.fixture
+def imis_all_daily_snow() -> list[dict[str, Any]]:
+    data: list[dict[str, Any]] = _load("imis_all_daily_snow.json")
+    return data

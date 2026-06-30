@@ -4,6 +4,18 @@ from datetime import datetime
 
 
 @dataclass(frozen=True, slots=True)
+class Station:
+    code: str
+    label: str
+    canton: str
+    country: str
+    elevation: float
+    latitude: float
+    longitude: float
+    type: str
+
+
+@dataclass(frozen=True, slots=True)
 class Measurement:
     parameter: str
     value: float
