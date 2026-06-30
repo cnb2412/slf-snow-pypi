@@ -14,6 +14,9 @@ integration.
 - No `home-assistant` imports. No own event loop. No blocking I/O.
 - Use the project's own exceptions (see `src/slf_snow/exceptions.py`).
 - Everything typed; `mypy --strict` must be green.
+- NEVER run `git push` yourself. Pushing requires a hardware security key the
+  maintainer touches at push time. Just show the exact `git push` command and let
+  the maintainer run it.
 
 ## Commands (in the Zed in-container terminal; outside Zed via `devcontainer exec --workspace-folder . …`)
 - Setup:      `uv sync`
