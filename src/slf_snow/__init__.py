@@ -5,7 +5,7 @@ from .exceptions import (
     SlfTransportError,
     StationNotFoundError,
 )
-from .models import Measurement, StationReading
+from .models import Measurement, Station, StationReading
 
 __all__ = [
     "Measurement",
@@ -13,6 +13,7 @@ __all__ = [
     "SlfResponseError",
     "SlfSnowError",
     "SlfTransportError",
+    "Station",
     "StationNotFoundError",
     "StationReading",
 ]
