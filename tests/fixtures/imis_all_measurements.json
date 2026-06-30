@@ -1,0 +1,30 @@
+[
+  {
+    "station_code": "WFJ2",
+    "measure_date": "2026-06-09T20:30:00Z",
+    "HS": 2.5,
+    "TA_30MIN_MEAN": 3.1,
+    "VW_30MIN_MEAN": 0.9
+  },
+  {
+    "station_code": "WFJ2",
+    "measure_date": "2026-06-09T21:00:00Z",
+    "HS": 0.0,
+    "TA_30MIN_MEAN": 2.7,
+    "VW_30MIN_MEAN": 1.7
+  },
+  {
+    "station_code": "KLO2",
+    "measure_date": "2026-06-09T20:30:00Z",
+    "HS": 118.0,
+    "TA_30MIN_MEAN": -1.2,
+    "VW_30MIN_MEAN": 2.4
+  },
+  {
+    "station_code": "KLO2",
+    "measure_date": "2026-06-09T21:00:00Z",
+    "HS": 120.0,
+    "TA_30MIN_MEAN": -1.5,
+    "VW_30MIN_MEAN": 3.0
+  }
+]
