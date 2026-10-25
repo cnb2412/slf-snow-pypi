@@ -1,6 +1,6 @@
 # Product Brief: slf-snow-pypi
 
-Status: Draft | Version: 0.1 | Date: 2026-10-25
+Status: Approved | Version: 1.0 | Date: 2026-10-25
 
 ## Problem statement
 The Swiss WSL Institute for Snow and Avalanche Research (SLF) publishes snow
