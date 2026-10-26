@@ -1,6 +1,6 @@
 # Product Brief: slf-snow-pypi
 
-Status: Approved | Version: 1.0 | Date: 2026-10-25
+Status: Approved | Version: 1.1 | Date: 2026-10-26
 
 ## Problem statement
 The Swiss WSL Institute for Snow and Avalanche Research (SLF) publishes snow
@@ -73,14 +73,21 @@ with HTTP details or the raw response format.
 - It is a standalone package, published on PyPI and usable independently of
   Home Assistant.
 - Hobby project; no deadline and no budget.
+- The SLF data is licensed under CC BY 4.0 (SLF Data Service terms of use,
+  https://www.slf.ch/en/services-and-products/slf-data-service). Products that
+  display the data must visibly name the source (WSL Institute for Snow and
+  Avalanche Research SLF), in digital products as a link to www.slf.ch. This
+  obligation lies with the displaying product; the package points it out in
+  its documentation.
+- Use of the API must not impair or overload the SLF infrastructure.
 
 ## Assumptions
 - No existing Python client or integration for the SLF Measurement API exists
   (based on the owner's own search, not a systematic review).
 - The API stays publicly accessible without authentication.
-- Undocumented rate limits are high enough for typical polling by integrations.
-- The SLF terms of use permit using and redistributing access to the data
-  through a public library (not yet verified; see Open questions).
+- Undocumented rate limits are high enough for typical polling by
+  integrations, without conflicting with the load clause in the terms of use
+  (see Risks).
 
 ## Success metrics
 - G-01: Station types in scope that can be listed (baseline: 0 of 2; target:
@@ -94,11 +101,16 @@ with HTTP details or the raw response format.
 - G-05: Stable release on PyPI (baseline: none; target: one stable release).
 
 ## Risks
-- **Terms of use not checked** (likelihood unknown, severity high): attribution
-  or redistribution rules could restrict a public package or require changes.
+- **Load / direct-use clause** (likelihood medium, severity high): the terms
+  of use state that the interfaces are "not dimensioned to directly serve the
+  requests of the customers' information systems". Many installations polling
+  the API directly could conflict with this clause or be throttled. Recorded
+  as a risk only; SLF is not contacted (decided 2026-10-26).
 - **Unannounced API changes** (likelihood medium, severity high): the API makes
   no stability promise and lists no contact; breaking changes would break all
-  consumers.
+  consumers. Mitigation: the owner registers for SLF's "Live measurement and
+  model data" mailing list (data@slf.ch), which announces changes,
+  interruptions and new terms of use.
 - **Undocumented rate limits** (likelihood low to medium, severity medium):
   frequent polling by many installations could be throttled or blocked.
 - **Inconsistent API documentation** (likelihood confirmed, severity low): at
@@ -107,14 +119,15 @@ with HTTP details or the raw response format.
 - **Seasonal gaps** (likelihood high, severity medium): stations may be
   inactive or return null values outside the winter season, which consumers
   could mistake for errors.
+- **Unverified raw data, no liability** (likelihood medium, severity medium):
+  SLF accepts no liability for errors, delays or failures, offers no stand-by
+  service, and part of the data is raw data that is not regularly checked;
+  values can be wrong or missing.
 - **Measured vs. modeled values** (likelihood medium, severity medium): mixing
   up measured and modeled snow values could mislead end users.
 
 ## Open questions
-- [blocking] What do the SLF Data Service Terms of Use require (attribution,
-  redistribution, commercial use), and do they allow a public client library?
 - [deferred] Will the Home Assistant integration target inclusion in Home
   Assistant Core? If so, Core's requirements for libraries become constraints
   for this package.
 - [deferred] Which open-source license will the package use?
-- [deferred] Should SLF be contacted about API stability and rate limits?
