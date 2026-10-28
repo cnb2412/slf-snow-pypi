@@ -1,6 +1,6 @@
 # Specification: slf-snow-pypi
 
-Status: Draft | Version: 0.1 | Date: 2026-10-28 | Brief: [docs/brief.md](../brief.md)
+Status: Draft | Version: 0.2 | Date: 2026-10-28 | Brief: [docs/brief.md](../brief.md)
 
 ## 1. Scope
 This version specifies a standalone, asynchronous Python client package for the
@@ -27,13 +27,14 @@ functionality beyond the API are out of scope (see section 8).
 | Measured value | A value observed at a station (study plot or IMIS measurement). |
 | Modeled value | A daily snow height or new-snow value computed by SLF's snowpack model for an IMIS station (API resource `daily-snow`). |
 | Record | One entry returned by the API for one station and one timestamp. |
-| Current record | The record with the latest timestamp that the API returns for a station, delivered as-is. |
+| Current record | The record with the latest timestamp among the records the API returns for a station, independent of the order in which the API delivers them; if several records share the latest timestamp, the first one delivered. Its values are delivered as-is. |
 | Empty value | A value that the API delivers as null or that is otherwise absent; represented as `None`. |
 | Call | One invocation of a public operation of the package by a consumer. |
 | Package error | Any error raised by the package; all error kinds below are package errors. |
 | Station not found | Error kind: the API reports that a station code is unknown. |
-| Service unavailable | Error kind: the API cannot be reached, answers with an HTTP error, or does not answer within the time limit. |
-| Invalid response | Error kind: the API answers, but the response does not match the expected format. |
+| Service unavailable | Error kind for transient failures: the API cannot be reached, does not answer within the time limit, or answers with HTTP 5xx or HTTP 429 (FR-015). |
+| Invalid response | Error kind for persistent failures: the API answers, but not as expected, i.e. the response does not match the in-scope fields or is an unexpected HTTP 4xx response (FR-016). |
+| In-scope field | A field of an API response that the package delivers: for stations `code`, `label`, `lat`, `lon`, `elevation`, `country_code`, `canton_code` (IMIS additionally `type`); for study-plot records `station_code`, `measure_date`, `HS`, `HN_1D`, `HNW_1D`; for IMIS records `station_code`, `measure_date`, `HS`; for modeled records `station_code`, `measure_date`, `HS`, `HN_1D`. All other fields are out of scope. |
 
 ## 3. Actors
 - **Integration developer** (primary): writes a Python application or integration
@@ -51,13 +52,15 @@ functionality beyond the API are out of scope (see section 8).
 | FR-005 | For a given IMIS station code, the package MUST return the current modeled record with its timestamp, snow height and new snow. | Modeled values complement IMIS measurements. | G-02 | TBD | Active |
 | FR-006 | The package MUST return, in one call each, the current record of every station for study-plot measurements, IMIS measurements and IMIS modeled values. | Consumers watching several stations need fewer requests, which reduces load on SLF (brief constraint). | G-02 | TBD | Active |
 | FR-007 | Modeled records MUST be distinguishable from measured records without inspecting their origin. | Mixing up measured and modeled values could mislead end users (brief risk). | G-02 | TBD | Active |
-| FR-008 | Every timestamp returned by the package MUST be timezone-aware and expressed in UTC, including timestamps that the API delivers without a zone designator. | The API delivers timestamps inconsistently (with and without `Z`). | G-02 | TBD | Active |
+| FR-008 | Every timestamp returned by the package MUST be timezone-aware and expressed in UTC, including timestamps that the API delivers without a zone designator. | The API delivers timestamps inconsistently (with and without `Z`). Timestamps without zone designator are treated as UTC because the API documentation states that all timestamps are UTC (decided 2026-10-28); observed 2026-10-28: period boundaries start at Swiss local midnight; not confirmed by SLF. | G-02 | TBD | Active |
 | FR-009 | An empty value in a record MUST be returned as `None` and MUST NOT cause an error. | Null values are normal, especially outside the winter season. | G-04 | TBD | Active |
 | FR-010 | When a station has no current record, the package MUST return "no record" instead of raising an error; for modeled values, a station absent from the API response MUST also be treated as "no record". | Seasonally inactive stations are normal; the modeled-values resource cannot distinguish unknown stations from stations without data within one request (NFR-004). | G-04 | TBD | Active |
-| FR-011 | When the API reports an unknown station code, the package MUST raise a *station not found* error. | Consumers must distinguish a wrong code from missing data. | G-04 | TBD | Active |
-| FR-012 | When the API cannot be reached, answers with an HTTP error status (other than the one covered by FR-011), or exceeds the time limit of NFR-006, the package MUST raise a *service unavailable* error. | Outages must be reported in a defined way. | G-04 | TBD | Active |
-| FR-013 | When the API response does not match the expected format, the package MUST raise an *invalid response* error. | The API makes no stability promise; format changes must not cause undefined failures. | G-04 | TBD | Active |
-| FR-014 | Every error raised by the package MUST be catchable as a package error, and the package MUST NOT let any other error escape for the conditions in FR-011 to FR-013. | Consumers handle all API problems with one well-defined set of errors. | G-04 | TBD | Active |
+| FR-011 | When the API reports an unknown station code, including a valid code of the other network, the package MUST raise a *station not found* error. | Consumers must distinguish a wrong code from missing data; observed 2026-10-28: the API reports codes of the other network as `STATION_NOT_FOUND` in both directions. | G-04 | TBD | Active |
+| FR-012 | When the API cannot be reached, answers with an HTTP error status (other than the one covered by FR-011), or exceeds the time limit of NFR-006, the package MUST raise a *service unavailable* error. | Outages must be reported in a defined way. | G-04 | TBD | Deprecated (replaced by FR-015, v0.2) |
+| FR-013 | When the API response does not match the expected format, the package MUST raise an *invalid response* error. | The API makes no stability promise; format changes must not cause undefined failures. | G-04 | TBD | Deprecated (replaced by FR-016, v0.2) |
+| FR-014 | Every error raised by the package MUST be catchable as a package error, and the package MUST NOT let any other error escape for the conditions in FR-011, FR-015 and FR-016. | Consumers handle all API problems with one well-defined set of errors. | G-04 | TBD | Active |
+| FR-015 | When the API cannot be reached, exceeds the time limit of NFR-006, or answers with HTTP 5xx or HTTP 429, the package MUST raise a *service unavailable* error. | These failures are transient; consumers may try again later. | G-04 | TBD | Active |
+| FR-016 | When the API response cannot be read, does not have the expected basic form (a list of entries), lacks an in-scope field or has an in-scope field of the wrong type, or is an HTTP 4xx response not covered by FR-011 or FR-015, the package MUST raise an *invalid response* error; fields that are not in scope MUST NOT cause an error, and an in-scope value that is null is an empty value (FR-009). | These failures are persistent and need a package update; changes to out-of-scope fields (NG-01) must not break consumers. | G-04 | TBD | Active |
 
 ## 5. Non-functional requirements
 | ID | Category | Requirement (measurable) | Rationale | Goals | Status |
@@ -83,6 +86,8 @@ functionality beyond the API are out of scope (see section 8).
   height (cm), new snow (cm); each value may be empty.
 - Relations: a station has zero or one current record per kind; records refer to
   stations by station code within the same network.
+- The attributes above correspond to the in-scope fields (see glossary); all
+  other fields of API responses are out of scope.
 - No entity contains personal data.
 
 ## 7. Use case index
@@ -115,22 +120,10 @@ request), a semantic-versioning promise, and shipping the attribution text as a
 value in the package.
 
 ## 9. Ambiguities to resolve
-- "Current record" is chosen by the latest timestamp among the records the API
-  returns for the default period (1 day); whether the API ever returns records
-  out of order is not documented.
-- Timestamps of modeled records come without a zone designator; FR-008 treats
-  them as UTC because the API documentation states that all timestamps are UTC.
-  Not confirmed by SLF.
-- How the package classifies an HTTP 422 (validation error) is open: it should
-  not occur for valid calls; FR-012 currently treats it as *service
-  unavailable*.
-- It is not documented whether `STATION_NOT_FOUND` is also returned for a valid
-  code of the other network (e.g. an IMIS code queried as a study plot).
-- Values of IMIS records that are outside scope (NG-01) are ignored; whether
-  their absence or change in a future API version counts as an *invalid
-  response* (FR-013) is not yet decided.
+None.
 
 ## 10. Changelog
 | Version | Date | Change | Breaking |
 |---------|------|--------|----------|
 | 0.1 | 2026-10-28 | Initial draft | no |
+| 0.2 | 2026-10-28 | Resolved all ambiguities of v0.1: (A1) only in-scope fields define the expected format, added glossary term "In-scope field"; (A2) FR-012 and FR-013 deprecated and replaced by FR-015 (service unavailable: unreachable, timeout, HTTP 5xx, HTTP 429) and FR-016 (invalid response: unreadable or non-conforming in-scope fields, other unexpected HTTP 4xx), FR-014 references updated; (A3) FR-011 clarified for codes of the other network (observed 2026-10-28); (A4) "Current record" selected by latest timestamp independent of API order, first delivered on a tie; (A5) timestamps without zone designator remain UTC per API documentation, observation added to FR-008 rationale. | yes (FR-012, FR-013) |
