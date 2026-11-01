@@ -1,6 +1,6 @@
 # Specification: slf-snow-pypi
 
-Status: Draft | Version: 0.3 | Date: 2026-10-31 | Brief: [docs/brief.md](../brief.md)
+Status: Approved | Version: 1.0 | Date: 2026-10-31 | Brief: [docs/brief.md](../brief.md)
 
 ## 1. Scope
 This version specifies a standalone, asynchronous Python client package for the
@@ -69,12 +69,16 @@ functionality beyond the API are out of scope (see section 8).
 |----|----------|--------------------------|-----------|-------|--------|
 | NFR-001 | constraint | The package MUST be a Python package whose public data operations are all asynchronous (awaitable) and MUST NOT block the caller's event loop while waiting for the API. | Brief constraint: Python, asynchronous. | G-03 | Active |
 | NFR-002 | constraint | The package MUST be installable and usable without Home Assistant installed (0 dependencies on Home Assistant packages). | Brief constraint: standalone package. | G-03, G-05 | Active |
-| NFR-003 | usability | Every value in scope (FR-001 to FR-006) MUST be obtainable with exactly 1 call, without the consumer building URLs, sending HTTP requests or parsing API responses. | Consumers need no HTTP code of their own. | G-03 | Active |
+| NFR-003 | usability | Every value in scope (FR-001 to FR-005 and FR-018) MUST be obtainable with exactly 1 call, without the consumer building URLs, sending HTTP requests or parsing API responses. | Consumers need no HTTP code of their own. | G-03 | Active |
 | NFR-004 | compliance | Each call MUST cause at most 1 HTTP request to the API; the package MUST NOT retry failed requests automatically. | Brief constraint: do not overload SLF infrastructure. | G-04 | Active |
 | NFR-005 | compliance | The package MUST NOT send any request to the API except as part of a call by the consumer (0 background requests). | Brief constraint: do not overload SLF infrastructure. | G-03 | Active |
 | NFR-006 | reliability | A call for which the API does not answer MUST end with a *service unavailable* error no later than 10 s after the request was sent; the consumer MUST be able to change this limit. | An outage is only detectable with a time limit. | G-04 | Active |
 | NFR-007 | compliance | The package documentation MUST state that the SLF data is licensed under CC BY 4.0 and that products displaying it must visibly name the WSL Institute for Snow and Avalanche Research SLF, in digital products as a link to www.slf.ch. | Brief constraint: attribution is the displaying product's obligation; the package points it out. | G-05 | Active |
 | NFR-008 | constraint | The package MUST be published on PyPI and installable from there with the standard Python package installer. | Brief goal: public release on PyPI. | G-05 | Active |
+| NFR-009 | constraint | The consumer MUST be able to supply an HTTP session of their own; if supplied, the package MUST send all requests through it and MUST NOT close it (0 requests through any other session). | Home Assistant Platinum rule inject-websession: integrations pass Home Assistant's shared session. | G-06 | Active |
+| NFR-010 | constraint | The package and every runtime dependency MUST be under an OSI-approved open-source license, and the package's license MUST be stated in its package metadata. | Home Assistant library requirement. | G-06 | Active |
+| NFR-011 | constraint | Every version published on PyPI MUST include a source distribution, MUST be built and published by a public CI pipeline, and MUST match a tagged release in the public repository; the repository MUST have a public issue tracker. | Home Assistant library requirements (dependency-transparency). | G-05, G-06 | Active |
+| NFR-012 | constraint | Every public operation, data type and error of the package MUST carry complete type annotations (0 errors from a strict static type check of the public interface), and the package MUST mark itself as typed (`py.typed`, PEP 561). | Home Assistant Platinum rule strict-typing. | G-06 | Active |
 
 ## 6. Data (conceptual)
 - **Station**: station code, name, latitude, longitude (WGS84), elevation
@@ -116,7 +120,7 @@ functionality beyond the API are out of scope (see section 8).
 Also excluded in this version (decided 2026-10-28): automatic retries or
 backoff (conflicts with NFR-004), a maximum age for current records, client-side
 rate limiting, a recommended polling interval, an identifying User-Agent, a
-consumer-supplied HTTP session, a synchronous interface, distinguishing unknown
+synchronous interface, distinguishing unknown
 stations from stations without data for modeled values (would need a second
 request), a semantic-versioning promise, and shipping the attribution text as a
 value in the package.
@@ -134,3 +138,4 @@ None.
 | 0.1 | 2026-10-28 | Initial draft | no |
 | 0.2 | 2026-10-28 | Resolved all ambiguities of v0.1: (A1) only in-scope fields define the expected format, added glossary term "In-scope field"; (A2) FR-012 and FR-013 deprecated and replaced by FR-015 (service unavailable: unreachable, timeout, HTTP 5xx, HTTP 429) and FR-016 (invalid response: unreadable or non-conforming in-scope fields, other unexpected HTTP 4xx), FR-014 references updated; (A3) FR-011 clarified for codes of the other network (observed 2026-10-28); (A4) "Current record" selected by latest timestamp independent of API order, first delivered on a tie; (A5) timestamps without zone designator remain UTC per API documentation, observation added to FR-008 rationale. | yes (FR-012, FR-013) |
 | 0.3 | 2026-10-31 | Gaps found while writing UC-001..UC-004: FR-009 extended to station attributes; FR-006 deprecated and replaced by FR-018 (only stations contained in the API response are returned); FR-017 added (station code transmitted only as identifier, empty code raises station not found without request); FR-014 references FR-017; time limit of zero or less excluded; use case traceability filled in. | yes (FR-006) |
+| 1.0 | 2026-10-31 | Brief v1.2 sets Home Assistant Core as target (G-06): added NFR-009 (consumer-supplied HTTP session, removed from "Also excluded"), NFR-010 (OSI license), NFR-011 (sdist, public CI, tags, issue tracker), NFR-012 (typed, `py.typed`); NFR-003 reference corrected from FR-006 to FR-018; status set to Approved. | no |
