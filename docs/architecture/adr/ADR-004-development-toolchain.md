@@ -6,7 +6,7 @@ Status: Proposed | Date: 2026-10-31
 The project needs tooling for environments and dependency locking, building
 source distributions and wheels, testing, linting/formatting and static type
 checking. Tests must exercise the delicate behavior of UC-004 realistically
-(time limit, exactly one request, HTTP 429/5xx, connection failures, station
+(time limit, the allowed number of requests, HTTP 429/5xx, connection failures, station
 code encoding) without calling the real SLF Measurement API. Development tools
 are not runtime dependencies, so NFR-010 does not apply to them. Current
 versions: uv 0.13.6 (with `uv_build`), hatchling 1.33.0, Poetry 2.5.1, ruff

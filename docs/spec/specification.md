@@ -1,11 +1,12 @@
 # Specification: slf-snow-pypi
 
-Status: Approved | Version: 1.0 | Date: 2026-10-31 | Brief: [docs/brief.md](../brief.md)
+Status: Approved | Version: 1.1 | Date: 2026-11-01 | Brief: [docs/brief.md](../brief.md)
 
 ## 1. Scope
 This version specifies a standalone, asynchronous Python client package for the
 snow values of the SLF Measurement API (https://measurement-api.slf.ch/). It
-covers listing the active study-plot and IMIS stations, retrieving the current
+covers listing the active study-plot and IMIS stations (per network or as one
+combined list), retrieving the current
 measured snow values of study plots and IMIS stations, retrieving the current
 modeled daily snow values of IMIS stations (per station or for all stations of a
 network in one call), and a defined behavior for missing data and API failures.
@@ -17,7 +18,7 @@ functionality beyond the API are out of scope (see section 8).
 |------|------------|
 | SLF | WSL Institute for Snow and Avalanche Research, operator of the SLF Measurement API. |
 | SLF Measurement API | The public REST API at https://measurement-api.slf.ch/ (OpenAPI version 1.1.0 at the time of writing). |
-| Network | A group of stations served by the API: *study plots* or *IMIS*. |
+| Network | A group of stations served by the API: *study plots* or *IMIS*; identified in the package as `study_plot` or `imis`. |
 | Study plot | Manual measuring site; reports snow height, new snow and new-snow water equivalent, typically once per day. |
 | IMIS station | Automated measuring station of the IMIS network; has a station type (e.g. `SNOW_FLAT`, `WIND`). |
 | Station code | Identifier of a station within the API (e.g. `DAV2`). |
@@ -63,16 +64,18 @@ functionality beyond the API are out of scope (see section 8).
 | FR-016 | When the API response cannot be read, does not have the expected basic form (a list of entries), lacks an in-scope field or has an in-scope field of the wrong type, or is an HTTP 4xx response not covered by FR-011 or FR-015, the package MUST raise an *invalid response* error; fields that are not in scope MUST NOT cause an error, and an in-scope value that is null is an empty value (FR-009). | These failures are persistent and need a package update; changes to out-of-scope fields (NG-01) must not break consumers. | G-04 | UC-001, UC-002, UC-003, UC-004 | Active |
 | FR-017 | A station code given by the consumer MUST be transmitted to the API only as a station identifier, so that no code can address any other API resource; an empty station code MUST raise a *station not found* error without sending a request. | A code such as `../imis` must not make the package read another resource as snow data; an empty code is a caller mistake, not an API failure. | G-04 | UC-002, UC-003, UC-004 | Active |
 | FR-018 | The package MUST return, in one call each, the current record of every station contained in the API response for study-plot measurements, IMIS measurements and IMIS modeled values; stations without a current record are not included. | Consumers watching several stations need fewer requests (brief load constraint); within one request (NFR-004) the package cannot know stations that the API omits. | G-02 | UC-002, UC-003 | Active |
+| FR-019 | The package MUST return, in one call, the combined list of all active study-plot and IMIS stations, each with the attributes of FR-001, its network, and for IMIS stations the station type (FR-002). If any request of the call fails, the package MUST raise the package error of FR-015 or FR-016 for a failed request and MUST NOT return a partial list. | Consumers let users choose from all stations at once; the API has no combined resource. A partial list could hide stations without the consumer noticing (decided 2026-11-01). | G-01 | UC-001 | Active |
+| FR-020 | Every station returned by the package (FR-001, FR-002, FR-019) MUST state its network as `study_plot` or `imis`. | Stations of a combined list must be distinguishable; the IMIS station type is a different attribute. | G-01 | UC-001 | Active |
 
 ## 5. Non-functional requirements
 | ID | Category | Requirement (measurable) | Rationale | Goals | Status |
 |----|----------|--------------------------|-----------|-------|--------|
 | NFR-001 | constraint | The package MUST be a Python package whose public data operations are all asynchronous (awaitable) and MUST NOT block the caller's event loop while waiting for the API. | Brief constraint: Python, asynchronous. | G-03 | Active |
 | NFR-002 | constraint | The package MUST be installable and usable without Home Assistant installed (0 dependencies on Home Assistant packages). | Brief constraint: standalone package. | G-03, G-05 | Active |
-| NFR-003 | usability | Every value in scope (FR-001 to FR-005 and FR-018) MUST be obtainable with exactly 1 call, without the consumer building URLs, sending HTTP requests or parsing API responses. | Consumers need no HTTP code of their own. | G-03 | Active |
-| NFR-004 | compliance | Each call MUST cause at most 1 HTTP request to the API; the package MUST NOT retry failed requests automatically. | Brief constraint: do not overload SLF infrastructure. | G-04 | Active |
+| NFR-003 | usability | Every value in scope (FR-001 to FR-005, FR-018 and FR-019) MUST be obtainable with exactly 1 call, without the consumer building URLs, sending HTTP requests or parsing API responses. | Consumers need no HTTP code of their own. | G-03 | Active |
+| NFR-004 | compliance | Each call MUST cause at most 1 HTTP request to the API per network it covers (at most 2 for FR-019); the package MUST NOT retry failed requests automatically. | Brief constraint: do not overload SLF infrastructure. | G-04 | Active |
 | NFR-005 | compliance | The package MUST NOT send any request to the API except as part of a call by the consumer (0 background requests). | Brief constraint: do not overload SLF infrastructure. | G-03 | Active |
-| NFR-006 | reliability | A call for which the API does not answer MUST end with a *service unavailable* error no later than 10 s after the request was sent; the consumer MUST be able to change this limit. | An outage is only detectable with a time limit. | G-04 | Active |
+| NFR-006 | reliability | A call for which the API does not answer MUST end with a *service unavailable* error no later than 10 s after the request was sent (for FR-019: after the call's first request was sent); the consumer MUST be able to change this limit. | An outage is only detectable with a time limit. | G-04 | Active |
 | NFR-007 | compliance | The package documentation MUST state that the SLF data is licensed under CC BY 4.0 and that products displaying it must visibly name the WSL Institute for Snow and Avalanche Research SLF, in digital products as a link to www.slf.ch. | Brief constraint: attribution is the displaying product's obligation; the package points it out. | G-05 | Active |
 | NFR-008 | constraint | The package MUST be published on PyPI and installable from there with the standard Python package installer. | Brief goal: public release on PyPI. | G-05 | Active |
 | NFR-009 | constraint | The consumer MUST be able to supply an HTTP session of their own; if supplied, the package MUST send all requests through it and MUST NOT close it (0 requests through any other session). | Home Assistant Platinum rule inject-websession: integrations pass Home Assistant's shared session. | G-06 | Active |
@@ -139,3 +142,4 @@ None.
 | 0.2 | 2026-10-28 | Resolved all ambiguities of v0.1: (A1) only in-scope fields define the expected format, added glossary term "In-scope field"; (A2) FR-012 and FR-013 deprecated and replaced by FR-015 (service unavailable: unreachable, timeout, HTTP 5xx, HTTP 429) and FR-016 (invalid response: unreadable or non-conforming in-scope fields, other unexpected HTTP 4xx), FR-014 references updated; (A3) FR-011 clarified for codes of the other network (observed 2026-10-28); (A4) "Current record" selected by latest timestamp independent of API order, first delivered on a tie; (A5) timestamps without zone designator remain UTC per API documentation, observation added to FR-008 rationale. | yes (FR-012, FR-013) |
 | 0.3 | 2026-10-31 | Gaps found while writing UC-001..UC-004: FR-009 extended to station attributes; FR-006 deprecated and replaced by FR-018 (only stations contained in the API response are returned); FR-017 added (station code transmitted only as identifier, empty code raises station not found without request); FR-014 references FR-017; time limit of zero or less excluded; use case traceability filled in. | yes (FR-006) |
 | 1.0 | 2026-10-31 | Brief v1.2 sets Home Assistant Core as target (G-06): added NFR-009 (consumer-supplied HTTP session, removed from "Also excluded"), NFR-010 (OSI license), NFR-011 (sdist, public CI, tags, issue tracker), NFR-012 (typed, `py.typed`); NFR-003 reference corrected from FR-006 to FR-018; status set to Approved. | no |
+| 1.1 | 2026-11-01 | Combined station list: added FR-019 (study-plot and IMIS stations in one call, no partial list on failure) and FR-020 (every station states its network, `study_plot` or `imis`); NFR-004 allows one request per network covered by a call; NFR-006 bounds the combined call from its first request; NFR-003 references FR-019; glossary "Network" and scope updated. | no |

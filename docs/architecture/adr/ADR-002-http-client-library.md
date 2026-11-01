@@ -16,8 +16,10 @@ Home Assistant Core pins exactly these versions.
 - Constraint NFR-001: asynchronous, non-blocking interface.
 - Constraint NFR-009: consumer-supplied HTTP session, never closed by the package.
 - Constraint NFR-010: OSI-approved licenses for runtime dependencies.
-- NFR-004: at most one request per call, no automatic retries.
-- NFR-006: time limit of 10 s (configurable), also with a supplied session.
+- NFR-004: at most one request per network covered by a call, no automatic
+  retries.
+- NFR-006: time limit of 10 s (configurable), also with a supplied session and
+  across the two concurrent requests of FR-019.
 - FR-015: connection failures and timeouts must be recognizable.
 
 ## Considered options
