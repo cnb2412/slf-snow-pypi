@@ -1,6 +1,6 @@
 # Product Brief: slf-snow-pypi
 
-Status: Approved | Version: 1.2 | Date: 2026-10-31
+Status: Approved | Version: 1.3 | Date: 2026-11-02
 
 ## Problem statement
 The Swiss WSL Institute for Snow and Avalanche Research (SLF) publishes snow
@@ -143,5 +143,4 @@ with HTTP details or the raw response format.
   up measured and modeled snow values could mislead end users.
 
 ## Open questions
-- [deferred] Which OSI-approved open-source license will the package use?
-  (Must be decided before the first PyPI release; see G-06.)
+None. The package license was decided in ADR-006 (MIT, accepted 2026-11-02).

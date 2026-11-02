@@ -1,6 +1,6 @@
 # ADR-006: License
 
-Status: Proposed | Date: 2026-10-31
+Status: Accepted | Date: 2026-10-31
 
 ## Context
 The package needs an OSI-approved license stated in its metadata (NFR-010,

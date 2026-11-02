@@ -1,6 +1,6 @@
 # UC-004: Handle missing data and API failures
 
-Status: Draft | Date: 2026-10-31 | Spec version: 0.3
+Status: Draft | Date: 2026-11-02 | Spec version: 2.1
 
 **Primary actor:** Integration developer
 **Goals:** G-04
@@ -32,7 +32,8 @@ incomplete data during a call.
   values or station attributes are null. The package returns them as `None`
   without an error. The use case ends.
 - **A3 (from step 3):** The SLF Measurement API returns no record for a station,
-  or omits the station from the modeled values. The package returns "no record"
+  answers HTTP 404 with code `NO_DATA`, or omits the station from the modeled
+  values. The package returns "no record"
   without an error. The use case ends.
 - **A4 (from step 3):** The SLF Measurement API answers with fields that are not
   in scope having changed, been added or been removed. The package ignores them
@@ -52,7 +53,7 @@ incomplete data during a call.
 - **E6 (from step 3):** An entry lacks an in-scope field or has an in-scope field
   of the wrong type. The package raises an *invalid response* error.
 - **E7 (from step 3):** The SLF Measurement API answers with an HTTP 4xx response
-  other than `STATION_NOT_FOUND` and HTTP 429 (e.g. HTTP 422). The package raises
+  other than `STATION_NOT_FOUND`, `NO_DATA` and HTTP 429 (e.g. HTTP 422). The package raises
   an *invalid response* error, i.e. a persistent failure.
 - **E8 (from step 3):** The SLF Measurement API reports the station code as
   unknown. The package raises a *station not found* error.

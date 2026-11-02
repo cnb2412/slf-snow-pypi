@@ -1,6 +1,6 @@
 # ADR-005: CI/CD and release process
 
-Status: Proposed | Date: 2026-10-31
+Status: Accepted | Date: 2026-10-31
 
 ## Context
 Every PyPI version must be built and published by a public CI pipeline, include

@@ -1,6 +1,6 @@
 # ADR-002: HTTP client library
 
-Status: Proposed | Date: 2026-10-31
+Status: Accepted | Date: 2026-10-31
 
 ## Context
 The package needs an asynchronous HTTP client to call the SLF Measurement API.

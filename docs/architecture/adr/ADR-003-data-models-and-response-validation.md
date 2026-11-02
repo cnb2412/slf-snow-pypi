@@ -1,6 +1,6 @@
 # ADR-003: Data models and response validation
 
-Status: Proposed | Date: 2026-10-31
+Status: Accepted | Date: 2026-10-31
 
 ## Context
 The package turns API responses into typed objects (station, study-plot record,

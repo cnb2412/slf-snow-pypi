@@ -1,6 +1,6 @@
 # UC-002: Get current measured snow values of a station
 
-Status: Draft | Date: 2026-11-01 | Spec version: 2.0
+Status: Draft | Date: 2026-11-02 | Spec version: 2.1
 
 **Primary actor:** Integration developer
 **Goals:** G-02, G-03, G-04
@@ -32,7 +32,8 @@ a study plot or IMIS station, e.g. to update a sensor.
   the snow height at an IMIS wind station). The package returns them as `None`
   without an error and continues with step 5.
 - **A2 (from step 3):** The SLF Measurement API returns no record for the station
-  (e.g. outside the winter season). The package returns "no record" without an
+  or reports that it has no data for the station (e.g. outside the winter season
+  or when a study plot skipped a reading). The package returns "no record" without an
   error. The use case ends.
 - **A3 (from step 1):** The integration developer requests the current records of
   all study plots with one call. The package sends one request and returns the
@@ -120,3 +121,6 @@ a study plot or IMIS station, e.g. to update a sensor.
 - **UC-002-AC15 (E1):** Given the API answers `STATION_NOT_FOUND` for code `4AO0`,
   when the integration developer requests the current measured record of `4AO0`
   in network `imis`, then a *station not found* error is raised.
+- **UC-002-AC16 (A2):** Given the API answers HTTP 404 with code `NO_DATA` for
+  study plot `4UL0`, when the integration developer requests its current measured
+  record, then "no record" is returned and no error is raised.

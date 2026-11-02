@@ -1,6 +1,6 @@
 # ADR-001: Supported Python versions
 
-Status: Proposed | Date: 2026-10-31
+Status: Accepted | Date: 2026-10-31
 
 ## Context
 The package is a Python library (NFR-001) whose concrete target consumer is a
