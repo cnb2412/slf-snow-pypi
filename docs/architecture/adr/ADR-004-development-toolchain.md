@@ -1,6 +1,6 @@
 # ADR-004: Development toolchain
 
-Status: Accepted | Date: 2026-10-31
+Status: Superseded by ADR-008 | Date: 2026-10-31
 
 ## Context
 The project needs tooling for environments and dependency locking, building

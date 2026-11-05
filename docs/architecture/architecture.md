@@ -1,6 +1,6 @@
 # Architecture: slf-snow-pypi
 
-Status: Draft | Version: 0.1 | Date: 2026-11-02 | Spec version: 2.2
+Status: Draft | Version: 0.2 | Date: 2026-11-05 | Spec version: 2.2
 
 ## 1. Context and scope
 The package is an asynchronous Python library that an integration developer
@@ -35,8 +35,8 @@ Used API resources (all `GET`, relative to `https://measurement-api.slf.ch/publi
   `aiohttp.ClientSession` ([ADR-002](adr/ADR-002-http-client-library.md)).
 - Results are immutable standard-library dataclasses validated by own code
   ([ADR-003](adr/ADR-003-data-models-and-response-validation.md)).
-- uv, hatchling, pytest with a local aiohttp test server, ruff and mypy strict
-  ([ADR-004](adr/ADR-004-development-toolchain.md)).
+- uv with its build backend `uv_build`, pytest with a local aiohttp test server,
+  ruff and mypy strict ([ADR-008](adr/ADR-008-development-toolchain.md)).
 - GitHub Actions with Trusted Publishing: tag → TestPyPI → owner approval → PyPI
   ([ADR-005](adr/ADR-005-ci-cd-and-release-process.md)).
 - MIT license ([ADR-006](adr/ADR-006-license.md)).
@@ -213,8 +213,8 @@ The package is not operated; it is published.
   ADR-007 if consumers need older values.
 
 ## 9. Development & tooling
-- Runtime and package manager: Python ≥ 3.14, uv; build backend hatchling
-  (ADR-001, ADR-004)
+- Runtime and package manager: Python ≥ 3.14, uv; build backend `uv_build`
+  (ADR-001, ADR-008)
 - Install: `uv sync`
 - Dev server: none (library)
 - Build: `uv build`
@@ -228,3 +228,4 @@ The package is not operated; it is published.
 | Version | Date | Change |
 |---------|------|--------|
 | 0.1 | 2026-11-02 | Initial draft |
+| 0.2 | 2026-11-05 | Build backend `uv_build` instead of hatchling: ADR-008 supersedes ADR-004; sections 2 and 9 updated |
