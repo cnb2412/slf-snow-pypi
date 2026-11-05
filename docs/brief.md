@@ -1,6 +1,6 @@
 # Product Brief: slf-snow-pypi
 
-Status: Approved | Version: 1.1 | Date: 2026-10-26
+Status: Approved | Version: 1.3 | Date: 2026-11-02
 
 ## Problem statement
 The Swiss WSL Institute for Snow and Avalanche Research (SLF) publishes snow
@@ -54,6 +54,9 @@ with HTTP details or the raw response format.
 - G-04: API problems (outage, unknown station, missing or null values) produce
   clearly defined errors or empty values instead of unexpected failures.
 - G-05: The package has a stable public release on PyPI.
+- G-06: The package meets Home Assistant Core's requirements for integration
+  libraries, including the Platinum-tier rules, so that the reference
+  integration can be included in Home Assistant Core.
 
 ## Non-goals
 - NG-01: Measurements other than snow (air and snow temperature, humidity, wind,
@@ -80,6 +83,17 @@ with HTTP details or the raw response format.
   obligation lies with the displaying product; the package points it out in
   its documentation.
 - Use of the API must not impair or overload the SLF infrastructure.
+- The reference integration targets inclusion in Home Assistant Core (decided
+  2026-10-31). Home Assistant's requirements for integration libraries
+  (https://contributors.home-assistant.io/core/integrations/api-library/,
+  https://contributors.home-assistant.io/core/quality-scale/dependency-transparency/)
+  apply: published on PyPI with a source distribution; an OSI-approved license
+  for the package and its dependencies, stated in its metadata; every PyPI
+  version matches a tagged release in a public repository and is built and
+  published by a public CI pipeline; a public issue tracker. Platinum-tier rules
+  additionally require an asynchronous library that accepts an HTTP session
+  supplied by the caller (inject-websession) and is typed with a `py.typed`
+  marker (strict-typing).
 
 ## Assumptions
 - No existing Python client or integration for the SLF Measurement API exists
@@ -99,6 +113,8 @@ with HTTP details or the raw response format.
 - G-04: Documented API failure classes (outage, unknown station, invalid
   response, null values) with defined behavior (baseline: none; target: all).
 - G-05: Stable release on PyPI (baseline: none; target: one stable release).
+- G-06: Home Assistant library requirements and Platinum-tier library rules met
+  (baseline: none; target: all listed under Constraints).
 
 ## Risks
 - **Load / direct-use clause** (likelihood medium, severity high): the terms
@@ -127,7 +143,4 @@ with HTTP details or the raw response format.
   up measured and modeled snow values could mislead end users.
 
 ## Open questions
-- [deferred] Will the Home Assistant integration target inclusion in Home
-  Assistant Core? If so, Core's requirements for libraries become constraints
-  for this package.
-- [deferred] Which open-source license will the package use?
+None. The package license was decided in ADR-006 (MIT, accepted 2026-11-02).
