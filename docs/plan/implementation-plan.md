@@ -1,7 +1,7 @@
 # Implementation Plan: slf-snow-pypi
 
-Status: Draft | Version: 0.1 | Date: 2026-11-03
-Based on: Spec 2.2, Architecture 0.1
+Status: Draft | Version: 0.2 | Date: 2026-11-05
+Based on: Spec 2.2, Architecture 0.2
 
 Legend: [ ] open · [~] in progress · [x] done · [-] dropped
 
@@ -16,19 +16,19 @@ lists (UC-001), the current measured record of one station in either network (UC
 single-station flows) and the complete error model (UC-004). Deferred to Milestone 2:
 all-stations variants (FR-018) and modeled IMIS values (UC-003).
 
-### [ ] STEP-01: [learning] uv, hatchling and Python packaging
+### [~] STEP-01: [learning] uv, uv_build and Python packaging
 - **Goal:** The owner understands how a Python package is defined, locked, built and inspected before the skeleton is created.
-- **Covers:** ADR-001, ADR-004 (preparation)
+- **Covers:** ADR-001, ADR-008 (preparation)
 - **Depends on:** —
 - **Done when:** In a scratch directory outside the repo, the owner has run `uv init --lib`, `uv add aiohttp`, `uv sync`, `uv build`, and inspected the sdist and wheel contents (`METADATA`, `py.typed`, license fields); open questions are answered.
-- **Notes:** No commit. Topics: `pyproject.toml` sections, `requires-python`, lower-bound dependencies (ADR-002), `uv.lock`, hatchling vs. `uv_build`, src layout, SPDX license expression, PEP 561 `py.typed`.
+- **Notes:** No commit. Topics: `pyproject.toml` sections, `requires-python`, lower-bound dependencies (ADR-002), `uv.lock`, build backends (`uv_build` vs. hatchling, ADR-008), src layout, SPDX license expression, PEP 561 `py.typed`.
 
 ### [ ] STEP-02: Walking skeleton — local toolchain and CI (owner-paced)
 - **Goal:** An empty, typed `slf_snow` package whose commands from "Development & tooling" all work locally and in CI.
-- **Covers:** ADR-001, ADR-004, ADR-005 (CI workflow), ADR-006, NFR-002, NFR-010, NFR-012
+- **Covers:** ADR-001, ADR-008, ADR-005 (CI workflow), ADR-006, NFR-002, NFR-010, NFR-012
 - **Depends on:** STEP-01
 - **Done when:** `uv sync`, `uv run pytest` (one trivial test), `uv run ruff check`, `uv run ruff format --check`, `uv run mypy` (strict) pass locally; `uv build` produces sdist and wheel containing `py.typed`, `License-Expression: MIT` and `aiohttp` as the only runtime dependency (lower bound only); `.github/workflows/ci.yml` runs on Python 3.14 and 3.15 and is green on the pull request.
-- **Notes:** Files: `pyproject.toml` (distribution `slf-snow`, `requires-python = ">=3.14"`, classifiers, hatchling, static version `0.0.1`), `src/slf_snow/__init__.py`, `src/slf_snow/py.typed`, `LICENSE` (MIT; owner confirms the copyright holder line), `tests/test_skeleton.py`, `uv.lock`. dev dependencies: pytest, pytest-aiohttp, ruff, mypy.
+- **Notes:** Files: `pyproject.toml` (distribution `slf-snow`, `requires-python = ">=3.14"`, classifiers, build backend `uv_build` with upper bound, static version `0.0.1`), `src/slf_snow/__init__.py`, `src/slf_snow/py.typed`, `LICENSE` (MIT; owner confirms the copyright holder line), `tests/test_skeleton.py`, `uv.lock`. dev dependencies: pytest, pytest-aiohttp, ruff, mypy.
 
 ### [ ] STEP-03: [learning] Trusted Publishing and the release flow
 - **Goal:** The owner understands the release path tag → build → TestPyPI → approval → PyPI before setting up accounts.
@@ -61,7 +61,7 @@ all-stations variants (FR-018) and modeled IMIS values (UC-003).
 
 ### [ ] STEP-06: [learning] asyncio and aiohttp
 - **Goal:** The owner understands the async building blocks of the client before it is built.
-- **Covers:** ADR-002, ADR-004 (preparation)
+- **Covers:** ADR-002, ADR-008 (preparation)
 - **Depends on:** STEP-02
 - **Done when:** In a scratch script the owner has used `aiohttp.ClientSession` (own vs. supplied), `ClientTimeout`, a local aiohttp test server with a request counter (pytest-aiohttp), `asyncio.TaskGroup` with `asyncio.timeout`, and seen how an `ExceptionGroup` arises and is unwrapped.
 - **Notes:** No commit.
@@ -200,3 +200,4 @@ Releasable result: `slf-snow` 0.2.0 on PyPI covering the complete spec 2.2.
 | Version | Date | Change |
 |---------|------|--------|
 | 0.1 | 2026-11-03 | Initial plan; Milestone-1 cut and learning steps decided by the owner |
+| 0.2 | 2026-11-05 | ADR-008 supersedes ADR-004 (build backend `uv_build`): STEP-01, STEP-02 and STEP-06 updated |
