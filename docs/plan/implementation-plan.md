@@ -16,7 +16,7 @@ lists (UC-001), the current measured record of one station in either network (UC
 single-station flows) and the complete error model (UC-004). Deferred to Milestone 2:
 all-stations variants (FR-018) and modeled IMIS values (UC-003).
 
-### [~] STEP-01: [learning] uv, uv_build and Python packaging
+### [x] STEP-01: [learning] uv, uv_build and Python packaging
 - **Goal:** The owner understands how a Python package is defined, locked, built and inspected before the skeleton is created.
 - **Covers:** ADR-001, ADR-008 (preparation)
 - **Depends on:** —
