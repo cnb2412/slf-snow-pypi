@@ -23,7 +23,7 @@ all-stations variants (FR-018) and modeled IMIS values (UC-003).
 - **Done when:** In a scratch directory outside the repo, the owner has run `uv init --lib`, `uv add aiohttp`, `uv sync`, `uv build`, and inspected the sdist and wheel contents (`METADATA`, `py.typed`, license fields); open questions are answered.
 - **Notes:** No commit. Topics: `pyproject.toml` sections, `requires-python`, lower-bound dependencies (ADR-002), `uv.lock`, build backends (`uv_build` vs. hatchling, ADR-008), src layout, SPDX license expression, PEP 561 `py.typed`.
 
-### [ ] STEP-02: Walking skeleton — local toolchain and CI (owner-paced)
+### [~] STEP-02: Walking skeleton — local toolchain and CI (owner-paced)
 - **Goal:** An empty, typed `slf_snow` package whose commands from "Development & tooling" all work locally and in CI.
 - **Covers:** ADR-001, ADR-008, ADR-005 (CI workflow), ADR-006, NFR-002, NFR-010, NFR-012
 - **Depends on:** STEP-01
