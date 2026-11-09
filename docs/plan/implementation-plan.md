@@ -23,7 +23,7 @@ all-stations variants (FR-018) and modeled IMIS values (UC-003).
 - **Done when:** In a scratch directory outside the repo, the owner has run `uv init --lib`, `uv add aiohttp`, `uv sync`, `uv build`, and inspected the sdist and wheel contents (`METADATA`, `py.typed`, license fields); open questions are answered.
 - **Notes:** No commit. Topics: `pyproject.toml` sections, `requires-python`, lower-bound dependencies (ADR-002), `uv.lock`, build backends (`uv_build` vs. hatchling, ADR-008), src layout, SPDX license expression, PEP 561 `py.typed`.
 
-### [ ] STEP-02: Walking skeleton — local toolchain and CI (owner-paced)
+### [x] STEP-02: Walking skeleton — local toolchain and CI (owner-paced)
 - **Goal:** An empty, typed `slf_snow` package whose commands from "Development & tooling" all work locally and in CI.
 - **Covers:** ADR-001, ADR-008, ADR-005 (CI workflow), ADR-006, NFR-002, NFR-010, NFR-012
 - **Depends on:** STEP-01
@@ -195,6 +195,10 @@ Releasable result: `slf-snow` 0.2.0 on PyPI covering the complete spec 2.2.
 | NFR-012 | STEP-02, STEP-07 (mypy strict in every later step) |
 
 ## Discovered work
+- (STEP-02) CI runs twice for pushes to a branch with an open PR (`push` and `pull_request`, as architecture.md §5 states); consider limiting `push` to `main`.
+- (STEP-02) Package metadata has no `[project.urls]` (source repository, issue tracker); useful for NFR-011 and Home Assistant's dependency-transparency rule; decide before STEP-13.
+- (STEP-02) GitHub Actions are pinned to commit SHAs (setup-uv publishes no major tags); no automated update yet (e.g. Dependabot would need an ADR).
+- (STEP-02) ruff 0.17 also formats Python code blocks in Markdown files (`docs/`, later README); keep doc examples ruff-formatted.
 
 ## Changelog
 | Version | Date | Change |
