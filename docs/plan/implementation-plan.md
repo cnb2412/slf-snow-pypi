@@ -30,7 +30,7 @@ all-stations variants (FR-018) and modeled IMIS values (UC-003).
 - **Done when:** `uv sync`, `uv run pytest` (one trivial test), `uv run ruff check`, `uv run ruff format --check`, `uv run mypy` (strict) pass locally; `uv build` produces sdist and wheel containing `py.typed`, `License-Expression: MIT` and `aiohttp` as the only runtime dependency (lower bound only); `.github/workflows/ci.yml` runs on Python 3.14 and 3.15 and is green on the pull request.
 - **Notes:** Files: `pyproject.toml` (distribution `slf-snow`, `requires-python = ">=3.14"`, classifiers, build backend `uv_build` with upper bound, static version `0.0.1`), `src/slf_snow/__init__.py`, `src/slf_snow/py.typed`, `LICENSE` (MIT; owner confirms the copyright holder line), `tests/test_skeleton.py`, `uv.lock`. dev dependencies: pytest, pytest-aiohttp, ruff, mypy.
 
-### [ ] STEP-03: [learning] Trusted Publishing and the release flow
+### [x] STEP-03: [learning] Trusted Publishing and the release flow
 - **Goal:** The owner understands the release path tag → build → TestPyPI → approval → PyPI before setting up accounts.
 - **Covers:** ADR-005 (preparation)
 - **Depends on:** STEP-02
@@ -199,6 +199,8 @@ Releasable result: `slf-snow` 0.2.0 on PyPI covering the complete spec 2.2.
 - (STEP-02) Package metadata has no `[project.urls]` (source repository, issue tracker); useful for NFR-011 and Home Assistant's dependency-transparency rule; decide before STEP-13.
 - (STEP-02) GitHub Actions are pinned to commit SHAs (setup-uv publishes no major tags); no automated update yet (e.g. Dependabot would need an ADR).
 - (STEP-02) ruff 0.17 also formats Python code blocks in Markdown files (`docs/`, later README); keep doc examples ruff-formatted.
+- (STEP-03) TestPyPI install check in `release.yml`: avoid dependency confusion (dependencies only from PyPI, e.g. install the local wheel first, then `slf-snow` from TestPyPI with `--no-deps`) and retry while the new upload propagates; settle in STEP-05.
+- (STEP-03) Verify that `uv version --short` prints the project version without side effects (lock/sync) before using it for the tag check in STEP-05.
 
 ## Changelog
 | Version | Date | Change |
