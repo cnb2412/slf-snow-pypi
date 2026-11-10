@@ -1,6 +1,6 @@
 # Implementation Plan: slf-snow-pypi
 
-Status: Draft | Version: 0.2 | Date: 2026-11-05
+Status: Draft | Version: 0.3 | Date: 2026-11-10
 Based on: Spec 2.2, Architecture 0.2
 
 Legend: [ ] open · [~] in progress · [x] done · [-] dropped
@@ -37,7 +37,7 @@ all-stations variants (FR-018) and modeled IMIS values (UC-003).
 - **Done when:** The owner can explain OIDC Trusted Publishing, pending publishers, GitHub environments with required reviewers, why TestPyPI is staging, and why a PyPI version can never be reused; Claude has walked through a draft of `release.yml` in chat (not committed).
 - **Notes:** No commit. Sources: docs.pypi.org/trusted-publishers, Python Packaging guide on GitHub Actions publishing.
 
-### [ ] STEP-04: [manual] Public repository, GitHub environments, PyPI and TestPyPI publishers
+### [x] STEP-04: [manual] Public repository, GitHub environments, PyPI and TestPyPI accounts, TestPyPI publisher
 - **Goal:** Everything outside the repository that the release workflow needs exists.
 - **Covers:** NFR-011, ADR-005
 - **Depends on:** STEP-03
@@ -48,7 +48,7 @@ all-stations variants (FR-018) and modeled IMIS values (UC-003).
   3. GitHub environment `pypi` (deployment tag rule `v*`, required reviewer: `cnb2412`, "Prevent self-review" off, since the tag is pushed with the owner's account).
   4. Account on https://test.pypi.org and on https://pypi.org (separate accounts), 2FA enabled on both.
   5. Pending trusted publisher on **TestPyPI**: project `slf-snow`, owner `cnb2412`, repository `slf-snow-pypi`, workflow `release.yml`, environment `testpypi`.
-  6. Pending trusted publisher on **PyPI**: same values, environment `pypi`.
+  6. Moved to STEP-20 (owner decision 2026-11-10: prove the TestPyPI path before configuring PyPI).
   7. Recommended (brief risk mitigation, not blocking): subscribe to SLF's "Live measurement and model data" mailing list (data@slf.ch).
 - **Notes:** No secrets are created (Trusted Publishing).
 
@@ -57,7 +57,15 @@ all-stations variants (FR-018) and modeled IMIS values (UC-003).
 - **Covers:** ADR-005, NFR-010, NFR-011
 - **Depends on:** STEP-04
 - **Done when:** `.github/workflows/release.yml` (build once, tag-equals-version check, publish to TestPyPI, install check from TestPyPI, `pypi` job gated by environment) is merged; tag `v0.0.1` publishes sdist and wheel with attestations to TestPyPI; the install check passes; the `pypi` job waits for approval and the owner **rejects** it; a deliberately wrong tag fails the version check (tested on a throwaway tag, then deleted).
-- **Notes:** Claude pushes the tag; only the owner acts on the `pypi` environment. Risk: a pending publisher does not reserve the name `slf-snow` on PyPI; the owner may decide here to approve 0.0.1 to PyPI to claim it.
+- **Notes:** Claude pushes the tag; only the owner acts on the `pypi` environment. The `pypi` job still waits for approval although no PyPI publisher exists yet (STEP-20); approving it here would fail at the token exchange. Risk: the name `slf-snow` stays unreserved on PyPI until the first PyPI upload (STEP-14).
+
+### [ ] STEP-20: [manual] PyPI trusted publisher
+- **Goal:** The release workflow can publish to PyPI once the TestPyPI path is proven.
+- **Covers:** NFR-008, ADR-005
+- **Depends on:** STEP-05
+- **Done when:** The owner confirms the pending publisher in chat.
+- **Owner provides / does:** Pending trusted publisher on **PyPI**: project `slf-snow`, owner `cnb2412`, repository `slf-snow-pypi`, workflow `release.yml`, environment `pypi`.
+- **Notes:** Claude checks beforehand that `slf-snow` is still free on PyPI. Numbered 20 because IDs are never reused; placed here because it precedes STEP-13.
 
 ### [ ] STEP-06: [learning] asyncio and aiohttp
 - **Goal:** The owner understands the async building blocks of the client before it is built.
@@ -107,7 +115,7 @@ all-stations variants (FR-018) and modeled IMIS values (UC-003).
 ### [ ] STEP-13: Release 0.1.0 to TestPyPI
 - **Goal:** Version 0.1.0 is built by public CI and proven on TestPyPI.
 - **Covers:** NFR-008, NFR-011, NFR-010
-- **Depends on:** STEP-05, STEP-12
+- **Depends on:** STEP-05, STEP-12, STEP-20
 - **Done when:** Version bump to `0.1.0` merged; tag `v0.1.0` pushed; TestPyPI shows 0.1.0 with sdist and wheel; install check passes; the `pypi` job waits for approval.
 
 ### [ ] STEP-14: [manual] Approve the PyPI release of 0.1.0
@@ -188,7 +196,7 @@ Releasable result: `slf-snow` 0.2.0 on PyPI covering the complete spec 2.2.
 | NFR-005 | STEP-07 |
 | NFR-006 | STEP-08, STEP-09 |
 | NFR-007 | STEP-12, STEP-18 |
-| NFR-008 | STEP-13, STEP-14, STEP-18, STEP-19 |
+| NFR-008 | STEP-13, STEP-14, STEP-18, STEP-19, STEP-20 |
 | NFR-009 | STEP-07 |
 | NFR-010 | STEP-02, STEP-05, STEP-13 |
 | NFR-011 | STEP-04, STEP-05, STEP-13, STEP-18 |
@@ -208,3 +216,4 @@ Releasable result: `slf-snow` 0.2.0 on PyPI covering the complete spec 2.2.
 |---------|------|--------|
 | 0.1 | 2026-11-03 | Initial plan; Milestone-1 cut and learning steps decided by the owner |
 | 0.2 | 2026-11-05 | ADR-008 supersedes ADR-004 (build backend `uv_build`): STEP-01, STEP-02 and STEP-06 updated |
+| 0.3 | 2026-11-10 | PyPI publisher moved from STEP-04 to new STEP-20 after the TestPyPI dry run (STEP-05); STEP-13 depends on STEP-20 |
