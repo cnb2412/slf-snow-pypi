@@ -201,6 +201,7 @@ Releasable result: `slf-snow` 0.2.0 on PyPI covering the complete spec 2.2.
 - (STEP-02) ruff 0.17 also formats Python code blocks in Markdown files (`docs/`, later README); keep doc examples ruff-formatted.
 - (STEP-03) TestPyPI install check in `release.yml`: avoid dependency confusion (dependencies only from PyPI, e.g. install the local wheel first, then `slf-snow` from TestPyPI with `--no-deps`) and retry while the new upload propagates; settle in STEP-05.
 - (STEP-03) Verify that `uv version --short` prints the project version without side effects (lock/sync) before using it for the tag check in STEP-05.
+- (STEP-04) Interim work-in-progress `README.md` added on the owner's request when the repository went public; STEP-12 replaces it with the full README.
 
 ## Changelog
 | Version | Date | Change |
