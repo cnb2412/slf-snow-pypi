@@ -1,0 +1,106 @@
+name: Release
+
+# ADR-005: tag vX.Y.Z -> build once -> TestPyPI -> install check -> owner approval -> PyPI.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: "3.14"
+      # NFR-011: the published version must match the tag.
+      - name: Check tag matches project version
+        run: |
+          version="$(uv version --short)"
+          if [ "${GITHUB_REF_NAME}" != "v${version}" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match project version ${version} (expected v${version})"
+            exit 1
+          fi
+      - name: Build
+        run: uv build
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  publish-testpypi:
+    name: Publish to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/slf-snow
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  verify-testpypi:
+    name: Install check from TestPyPI
+    needs: publish-testpypi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist/
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: "3.14"
+      # Dependencies come from PyPI via the local wheel; only slf-snow itself is
+      # taken from TestPyPI (--no-deps), so no TestPyPI package can stand in for a
+      # dependency. Retries cover the delay until the new upload is served.
+      - name: Install from TestPyPI
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          uv venv
+          uv pip install dist/*.whl
+          for attempt in $(seq 1 10); do
+            if uv pip install --reinstall --no-deps --refresh \
+              --default-index https://test.pypi.org/simple/ "slf-snow==${version}"; then
+              exit 0
+            fi
+            echo "Attempt ${attempt} failed; retrying in 30 s"
+            sleep 30
+          done
+          echo "::error::slf-snow ${version} could not be installed from TestPyPI"
+          exit 1
+      - name: Check installation
+        run: |
+          uv pip check
+          .venv/bin/python -c "import importlib.metadata, sys, slf_snow; v = importlib.metadata.version('slf-snow'); print(v); sys.exit(v != sys.argv[1])" "${GITHUB_REF_NAME#v}"
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: verify-testpypi
+    runs-on: ubuntu-latest
+    # Only the owner approves this environment (ADR-005).
+    environment:
+      name: pypi
+      url: https://pypi.org/p/slf-snow
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
