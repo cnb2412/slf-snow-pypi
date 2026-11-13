@@ -52,7 +52,7 @@ all-stations variants (FR-018) and modeled IMIS values (UC-003).
   7. Recommended (brief risk mitigation, not blocking): subscribe to SLF's "Live measurement and model data" mailing list (data@slf.ch).
 - **Notes:** No secrets are created (Trusted Publishing).
 
-### [ ] STEP-05: Walking skeleton — release dry run to TestPyPI (owner-paced)
+### [x] STEP-05: Walking skeleton — release dry run to TestPyPI (owner-paced)
 - **Goal:** Prove the release pipeline end to end with the empty package, without a production release.
 - **Covers:** ADR-005, NFR-010, NFR-011
 - **Depends on:** STEP-04
@@ -207,9 +207,12 @@ Releasable result: `slf-snow` 0.2.0 on PyPI covering the complete spec 2.2.
 - (STEP-02) Package metadata has no `[project.urls]` (source repository, issue tracker); useful for NFR-011 and Home Assistant's dependency-transparency rule; decide before STEP-13.
 - (STEP-02) GitHub Actions are pinned to commit SHAs (setup-uv publishes no major tags); no automated update yet (e.g. Dependabot would need an ADR).
 - (STEP-02) ruff 0.17 also formats Python code blocks in Markdown files (`docs/`, later README); keep doc examples ruff-formatted.
-- (STEP-03) TestPyPI install check in `release.yml`: avoid dependency confusion (dependencies only from PyPI, e.g. install the local wheel first, then `slf-snow` from TestPyPI with `--no-deps`) and retry while the new upload propagates; settle in STEP-05.
-- (STEP-03) Verify that `uv version --short` prints the project version without side effects (lock/sync) before using it for the tag check in STEP-05.
+- (STEP-03) TestPyPI install check in `release.yml`: avoid dependency confusion (dependencies only from PyPI, e.g. install the local wheel first, then `slf-snow` from TestPyPI with `--no-deps`) and retry while the new upload propagates; settle in STEP-05. **Resolved in STEP-05:** `verify-testpypi` installs the local wheel (aiohttp from PyPI), then reinstalls only `slf-snow` from TestPyPI with `--no-deps` and up to 10 retries.
+- (STEP-03) Verify that `uv version --short` prints the project version without side effects (lock/sync) before using it for the tag check in STEP-05. **Resolved in STEP-05:** prints `0.0.1`; no lock change and no `.venv` created, also in a clean clone.
 - (STEP-04) Interim work-in-progress `README.md` added on the owner's request when the repository went public; STEP-12 replaces it with the full README.
+- (STEP-05) Claude's environment has no SSH push access; release tags are created through the GitHub API as lightweight tags on the merge commit. Decide before STEP-13 whether releases need annotated or signed tags (the owner can push them from the host instead).
+- (STEP-05) Rejecting the `pypi` deployment marks the whole release run as failed (job `Publish to PyPI` = failure, 0 steps). This is expected for dry runs; keep it in mind when reading run history.
+- (STEP-05) Merged branches are not deleted automatically (`ci/release-workflow` was removed by hand); consider enabling "Automatically delete head branches" in the repository settings [manual].
 
 ## Changelog
 | Version | Date | Change |
