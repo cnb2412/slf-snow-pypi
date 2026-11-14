@@ -59,7 +59,7 @@ all-stations variants (FR-018) and modeled IMIS values (UC-003).
 - **Done when:** `.github/workflows/release.yml` (build once, tag-equals-version check, publish to TestPyPI, install check from TestPyPI, `pypi` job gated by environment) is merged; tag `v0.0.1` publishes sdist and wheel with attestations to TestPyPI; the install check passes; the `pypi` job waits for approval and the owner **rejects** it; a deliberately wrong tag fails the version check (tested on a throwaway tag, then deleted).
 - **Notes:** Claude pushes the tag; only the owner acts on the `pypi` environment. The `pypi` job still waits for approval although no PyPI publisher exists yet (STEP-20); approving it here would fail at the token exchange. Risk: the name `slf-snow` stays unreserved on PyPI until the first PyPI upload (STEP-14).
 
-### [ ] STEP-20: [manual] PyPI trusted publisher
+### [x] STEP-20: [manual] PyPI trusted publisher
 - **Goal:** The release workflow can publish to PyPI once the TestPyPI path is proven.
 - **Covers:** NFR-008, ADR-005
 - **Depends on:** STEP-05
@@ -212,6 +212,7 @@ Releasable result: `slf-snow` 0.2.0 on PyPI covering the complete spec 2.2.
 - (STEP-04) Interim work-in-progress `README.md` added on the owner's request when the repository went public; STEP-12 replaces it with the full README.
 - (STEP-05) Claude's environment has no SSH push access; release tags are created through the GitHub API as lightweight tags on the merge commit. Decide before STEP-13 whether releases need annotated or signed tags (the owner can push them from the host instead).
 - (STEP-05) Rejecting the `pypi` deployment marks the whole release run as failed (job `Publish to PyPI` = failure, 0 steps). This is expected for dry runs; keep it in mind when reading run history.
+- (STEP-20) A pending publisher does not reserve the name: `slf-snow` stays registrable by anyone until the first PyPI upload (STEP-14), and the pending publisher becomes invalid if someone else registers it first. Re-check the name before STEP-13.
 
 ## Changelog
 | Version | Date | Change |
